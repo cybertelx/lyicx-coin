@@ -296,6 +296,9 @@ export const MainPage: FC = () => {
                   What do you use Lyicx Coin for? Well of course, you can tip your friends some LYCX as a joke.
                   That&apos;s it. Seriously.
                 </Typography.Paragraph>
+                <Typography.Paragraph>
+                  Import the token (<code>0xF9CE16a9C242A44F718F7A60cbD5f5BA45c28865</code>) in your MetaMask wallet.
+                </Typography.Paragraph>
                 <ul>
                   <li>
                     <Typography.Link href="https://xdai-faucet.top/">Get free xDAI for transactions</Typography.Link>
