@@ -311,8 +311,8 @@ export const MainPage: FC = () => {
                     </Typography.Link>
                   </li>
                   <li>
-                    <Typography.Link href="https://github.com/Lyicx">
-                      Also a link to Lyicx&apos;s GitHub.
+                    <Typography.Link href="https://youtube.com/Lyicx">
+                      Also a link to Lyicx&apos;s YouTube channel.
                     </Typography.Link>
                   </li>
                 </ul>
