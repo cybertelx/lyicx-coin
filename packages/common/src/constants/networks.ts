@@ -58,7 +58,7 @@ export const NETWORKS = {
     chainId: 100,
     price: 1,
     gasPrice: 1200000000,
-    url: 'https://dai.poa.network',
+    url: 'https://rpc.gnosischain.com/',
     faucet: 'https://xdai-faucet.top/',
     blockExplorer: 'https://blockscout.com/poa/xdai/',
   },

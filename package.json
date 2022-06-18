@@ -109,5 +109,8 @@
   },
   "volta": {
     "node": "16.15.0"
+  },
+  "dependencies": {
+    "usehooks-ts": "^2.5.4"
   }
 }

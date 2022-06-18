@@ -1,24 +1,38 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 import '~~/styles/main-page.css';
-import { GenericContract } from 'eth-components/ant/generic-contract';
-import { useContractReader, useBalance, useEthersAdaptorFromProviderOrSigners, useEventListener } from 'eth-hooks';
+import { Card, Col, Divider, Row, Typography, Button } from 'antd';
+import { Faucet } from 'eth-components/ant';
+import { transactor } from 'eth-components/functions';
+import { EthComponentsSettingsContext } from 'eth-components/models';
+import {
+  useContractReader,
+  useBalance,
+  useEthersAdaptorFromProviderOrSigners,
+  useSignerAddress,
+  useGasPrice,
+} from 'eth-hooks';
 import { useEthersAppContext } from 'eth-hooks/context';
 import { useDexEthPrice } from 'eth-hooks/dapps';
 import { asEthersAdaptor } from 'eth-hooks/functions';
-import React, { FC, useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import React, { FC, useContext, useEffect, useMemo, useState } from 'react';
 import { BrowserRouter, Switch } from 'react-router-dom';
 
 import { MainPageFooter, MainPageHeader, createTabsAndRoutes, TContractPageList } from '../components/main';
 
+import LyicxImage from '~assets/lyicx.png';
+import { getFaucetAvailable } from '~common/components';
 import { useAppContracts, useConnectAppContracts, useLoadAppContracts } from '~common/components/context';
 import { useCreateAntNotificationHolder } from '~common/components/hooks/useAntNotification';
 import { useBurnerFallback } from '~common/components/hooks/useBurnerFallback';
 import { useScaffoldAppProviders } from '~common/components/hooks/useScaffoldAppProviders';
-import { NETWORKS } from '~common/constants';
+import { getNetworkInfo } from '~common/functions';
+import { useLyicxComment } from '~~/components/hooks/useLyicxComment';
 import { useScaffoldHooksExamples } from '~~/components/hooks/useScaffoldHooksExamples';
 import {
   BURNER_FALLBACK_ENABLED,
   CONNECT_TO_BURNER_AUTOMATICALLY,
+  FAUCET_ENABLED,
   INFURA_ID,
   LOCAL_PROVIDER,
   MAINNET_PROVIDER,
@@ -39,6 +53,8 @@ import {
  * @returns
  */
 export const MainPage: FC = () => {
+  const ethComponentsSettings = useContext(EthComponentsSettingsContext);
+
   const notificationHolder = useCreateAntNotificationHolder();
   // -----------------------------
   // Providers, signers & wallets
@@ -78,25 +94,37 @@ export const MainPage: FC = () => {
   // 🏹🏹🏹 go here to see how to use hooks!
   useScaffoldHooksExamples(scaffoldAppProviders);
 
+  /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
+  const gasPrice = useGasPrice(TARGET_NETWORK_INFO.chainId, 'fast');
+
+  // The transactor wraps transactions and provides notificiations
+  const tx = transactor(ethComponentsSettings, ethersAppContext?.signer, gasPrice[0]);
+
   // -----------------------------
   // These are the contracts!
   // -----------------------------
 
   // init contracts
-  const yourContract = useAppContracts('YourContract', ethersAppContext.chainId);
-  const yourNFT = useAppContracts('YourNFT', ethersAppContext.chainId);
-  const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId);
+  const lyicxCoin = useAppContracts('LyicxCoin', ethersAppContext.chainId);
 
-  // keep track of a variable from the contract in the local React state:
-  const [purpose, update] = useContractReader(
-    yourContract,
-    yourContract?.purpose,
-    [],
-    yourContract?.filters.SetPurpose()
+  const sink = useAppContracts('Sink', ethersAppContext.chainId);
+
+  const [myAddress] = useSignerAddress(ethersAppContext.signer);
+  const lycxBalanceResult = useContractReader(lyicxCoin, lyicxCoin?.balanceOf, [myAddress ?? '']);
+  const totalSupplyResult = useContractReader(lyicxCoin, lyicxCoin?.totalSupply, []);
+
+  const lycxBalance = useMemo(
+    () => ethers.utils.formatEther(lycxBalanceResult[0] !== undefined ? lycxBalanceResult[0] : 0),
+    [lycxBalanceResult]
+  );
+  const totalSupply = useMemo(
+    () => ethers.utils.formatEther(totalSupplyResult[0] !== undefined ? totalSupplyResult[0] : 0),
+    [totalSupplyResult]
   );
 
-  // 📟 Listen for broadcast events
-  const [setPurposeEvents] = useEventListener(yourContract, 'SetPurpose', 0);
+  const percentageOfTotalSupply =
+    Number(lycxBalance) !== 0 && Number(totalSupply) !== 0 ? (Number(lycxBalance) / Number(totalSupply)) * 100 : 0;
+  const lyicxComment = useLyicxComment(Number(lycxBalance));
 
   // -----------------------------
   // .... 🎇 End of examples
@@ -115,42 +143,183 @@ export const MainPage: FC = () => {
     setRoute(window.location.pathname);
   }, [setRoute]);
 
+  // Faucet Tx can be used to send funds from the faucet
+  const faucetAvailable = getFaucetAvailable(scaffoldAppProviders, ethersAppContext, FAUCET_ENABLED);
+
+  const network = getNetworkInfo(ethersAppContext.chainId);
+
   // -----------------------------
   // 📃 App Page List
   // -----------------------------
   // This is the list of tabs and their contents
   const pageList: TContractPageList = {
     mainPage: {
-      name: 'YourContract',
+      name: 'Dashboard',
       content: (
-        <GenericContract
-          contractName="YourContract"
-          contract={yourContract}
-          mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
-          blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
-        />
+        <>
+          {/* <GenericContract
+            contractName="LyicxCoin"
+            contract={lyicxCoin}
+            mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
+            blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
+          />*/}
+          <Row wrap={false} justify="space-evenly">
+            {/* <GenericContract
+            contractName="LyicxCoin"
+            contract={lyicxCoin}
+            mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
+            blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
+          />*/}
+            <Col flex="500px">
+              <Card title={<Typography.Title>Lyicx Coin</Typography.Title>}>
+                <Typography.Title level={3}>
+                  A revolutionary new cryptocurrency powered by Lyicxonomics™.
+                </Typography.Title>
+                <Typography.Paragraph>
+                  <blockquote>what the fuck is a lyicxonomic</blockquote>
+                  <figcaption>
+                    —Lyicx, <cite>#freedom-01-server-chat</cite>
+                  </figcaption>
+                </Typography.Paragraph>
+                <Row>
+                  <Col flex="auto">
+                    <img src={LyicxImage} width="200px"></img>
+                  </Col>
+                  <Col flex="auto">
+                    {ethersAppContext.chainId !== TARGET_NETWORK_INFO.chainId && (
+                      <>
+                        <Typography.Title level={5}>
+                          Please connect your wallet with the correct blockchain to continue.
+                        </Typography.Title>
+                      </>
+                    )}
+                    {ethersAppContext.chainId === TARGET_NETWORK_INFO.chainId && (
+                      <>
+                        <Typography>Total Supply</Typography>
+                        <h2>
+                          <b>{totalSupply} LYCX</b>
+                        </h2>
+                        <Divider />
+                        <Typography>Your Balance</Typography>
+                        <h2>
+                          <b>{lycxBalance} LYCX</b>
+                        </h2>
+                        {lyicxComment}
+                        <Divider />
+                        <Typography>Percentage of Total Supply</Typography>
+                        <h2>
+                          <b>{Math.round(percentageOfTotalSupply * 100) / 100}%</b>
+                        </h2>
+                      </>
+                    )}
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+          </Row>
+        </>
       ),
     },
     pages: [
       {
-        name: 'YourNFT',
+        name: 'Sink',
         content: (
-          <GenericContract
-            contractName="YourNFT"
-            contract={yourNFT}
+          <Row wrap={false} justify="space-evenly">
+            {/* <GenericContract
+            contractName="LyicxCoin"
+            contract={lyicxCoin}
             mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
-            blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}></GenericContract>
+            blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
+          />*/}
+            <Col flex="500px">
+              <Card title={<Typography.Title>Sink</Typography.Title>}>
+                <Typography.Title level={3}>Press button for 1000 free LYCX coins</Typography.Title>
+                <Typography.Paragraph>
+                  <blockquote>what the fuck is a lyicxonomic</blockquote>
+                  <figcaption>
+                    —Lyicx, <cite>#freedom-01-server-chat</cite>
+                  </figcaption>
+                </Typography.Paragraph>
+
+                <Button
+                  onClick={(): void => {
+                    if (tx && sink && sink.drip) void tx(sink?.drip());
+                  }}>
+                  Get 1000 free LYCX!!!
+                </Button>
+                <Row>
+                  <Col flex="auto">
+                    <img src={LyicxImage} width="200px"></img>
+                  </Col>
+                </Row>
+                {
+                  /*  if the local provider has a signer, let's show the faucet:  */
+                  faucetAvailable && scaffoldAppProviders?.mainnetAdaptor && scaffoldAppProviders?.localAdaptor ? (
+                    <Faucet
+                      localAdaptor={scaffoldAppProviders.localAdaptor}
+                      price={0}
+                      mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
+                    />
+                  ) : (
+                    <></>
+                  )
+                }
+              </Card>
+            </Col>
+          </Row>
         ),
       },
       {
-        name: 'Mainnet-Dai',
+        name: 'About and Help',
         content: (
-          <GenericContract
-            contractName="Dai"
-            contract={mainnetDai}
+          <Row wrap={false} justify="space-evenly">
+            {/* <GenericContract
+            contractName="LyicxCoin"
+            contract={lyicxCoin}
             mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
             blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
-          />
+          />*/}
+            <Col flex="500px">
+              <Card title={<Typography.Title>Alright, really</Typography.Title>}>
+                <Typography.Title level={3}>Lyicx Coin is a joke coin haha</Typography.Title>
+                <Typography.Paragraph>
+                  <blockquote>what the fuck is a lyicxonomic</blockquote>
+                  <figcaption>
+                    —Lyicx, <cite>#freedom-01-server-chat</cite>
+                  </figcaption>
+                </Typography.Paragraph>
+                <Typography.Paragraph>
+                  The coin is on the Gnosis Chain. This is not financial advice. Nothing here is financial advice. Lyicx
+                  has authorized this coin.
+                </Typography.Paragraph>
+                <Typography.Paragraph>
+                  What do you use Lyicx Coin for? Well of course, you can tip your friends some LYCX as a joke.
+                  That&apos;s it. Seriously.
+                </Typography.Paragraph>
+                <ul>
+                  <li>
+                    <Typography.Link href="https://xdai-faucet.top/">Get free xDAI for transactions</Typography.Link>
+                  </li>
+                  <li>
+                    <Typography.Link href="https://metamask.zendesk.com/hc/en-us/articles/360052711572-How-to-connect-to-the-Gnosis-Chain-network-formerly-xDai-">
+                      How to add the Gnosis Chain to MetaMask
+                    </Typography.Link>
+                  </li>
+                  <li>
+                    <Typography.Link href="https://github.com/cybertelx">
+                      Here&apos;s a link to my awesome GitHub!
+                    </Typography.Link>
+                  </li>
+                  <li>
+                    <Typography.Link href="https://github.com/Lyicx">
+                      Also a link to Lyicx&apos;s GitHub.
+                    </Typography.Link>
+                  </li>
+                </ul>
+                - Made with ❤️ by Operator (the dope)
+              </Card>
+            </Col>
+          </Row>
         ),
       },
     ],

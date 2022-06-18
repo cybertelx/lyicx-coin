@@ -1,6 +1,5 @@
 import { getNetwork } from '@ethersproject/networks';
 import { Alert, PageHeader } from 'antd';
-import { Account } from 'eth-components/ant';
 import { EthComponentsSettingsContext } from 'eth-components/models';
 import { useGasPrice } from 'eth-hooks';
 import {
@@ -12,11 +11,11 @@ import {
 } from 'eth-hooks/context';
 import React, { FC, ReactElement, ReactNode, useCallback, useContext } from 'react';
 
-import { FaucetHintButton } from '~common/components';
+import { Account } from './Account';
+
 import { useAntNotification } from '~common/components/hooks';
 import { getNetworkInfo } from '~common/functions';
 import { IScaffoldAppProviders } from '~common/models';
-import { FAUCET_ENABLED } from '~~/config/app.config';
 
 // displays a page header
 export interface IMainPageHeaderProps {
@@ -46,23 +45,7 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
   const left = (
     <>
       <div>
-        <PageHeader
-          title="🏭 Scaffold-Eth"
-          subTitle={
-            <span>
-              v2.1 - [
-              <a href="https://youtu.be/aYMj00JoIug" target="_blank" rel="noreferrer">
-                <span style={{ marginRight: 4 }}>🎥 </span> 8min speed run
-              </a>
-              ] - [
-              <a href="https://trello.com/b/ppbUs796/buidlguidlcom-idea-board" target="_blank" rel="noreferrer">
-                <span style={{ marginRight: 4 }}>💡 </span> trello
-              </a>
-              ]{' '}
-            </span>
-          }
-          style={{ cursor: 'pointer' }}
-        />
+        <PageHeader title="Lyicx Coin" subTitle={<span>is dumb asf</span>} style={{ cursor: 'pointer' }} />
       </div>
       {props.children}
     </>
@@ -101,15 +84,9 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
         createLoginConnector={props.scaffoldAppProviders.createLoginConnector}
         loginOnError={onLoginError}
         ensProvider={props.scaffoldAppProviders.mainnetAdaptor?.provider}
-        price={props.price}
+        price={1}
         blockExplorer={props.scaffoldAppProviders.targetNetwork.blockExplorer}
         hasContextConnect={true}
-      />
-      <FaucetHintButton
-        ethComponentSettings={settingsContext}
-        scaffoldAppProviders={props.scaffoldAppProviders}
-        gasPrice={gasPrice}
-        faucetEnabled={FAUCET_ENABLED}
       />
       {props.children}
     </div>

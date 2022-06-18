@@ -87,7 +87,7 @@ export const getWeb3ModalConfig = async (
         rpc: {
           1: `https://mainnet.infura.io/v3/${config.infuraId}`,
           42: `https://kovan.infura.io/v3/${config.infuraId}`,
-          100: 'https://dai.poa.network',
+          100: 'https://rpc.gnosischain.com',
         },
       },
     };

@@ -68,6 +68,7 @@
     "timers-browserify": "^2.0.12",
     "ts-invariant": "^0.10.3",
     "use-debounce": "^8.0.1",
+    "usehooks-ts": "^2.5.4",
     "util": "^0.12.4",
     "web3modal": "^1.9.8"
   },

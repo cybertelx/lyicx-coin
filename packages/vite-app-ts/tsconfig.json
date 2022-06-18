@@ -26,7 +26,8 @@
     "jsxImportSource": "@emotion/react",
     "paths": {
       "~~/*": ["./src/*"],
-      "~common/*": ["../common/src/*"]
+      "~common/*": ["../common/src/*"],
+      "~assets/*": ["./assets/*"]
     }
   },
   "include": ["src", "src/helpers/__global.ts", "vite.config.ts", "../common/src"],

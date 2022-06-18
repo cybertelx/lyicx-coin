@@ -12,7 +12,7 @@ import glob from 'glob';
 import { removeConsoleLog } from 'hardhat-preprocessor';
 import { HardhatUserConfig } from 'hardhat/config';
 
-import { getMnemonic } from './tasks/functions/mnemonic';
+import { getPrivateKey } from './tasks/functions/mnemonic';
 
 /**
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
@@ -45,9 +45,7 @@ console.log('HARDHAT_TARGET_NETWORK: ', process.env.HARDHAT_TARGET_NETWORK);
  */
 const networks = {
   ...getNetworks({
-    accounts: {
-      mnemonic: getMnemonic(),
-    },
+    accounts: [getPrivateKey()],
   }),
   localhost: {
     url: 'http://localhost:8545',

@@ -75,6 +75,7 @@ export default defineConfig({
     alias: {
       '~~': resolve(__dirname, 'src'),
       '~common': resolve(__dirname, '../common/src'),
+      '~assets': resolve(__dirname, './assets'),
       // -------------------------------------------
       // your aliases
       'eth-hooks': resolve(__dirname, './node_modules/eth-hooks'),

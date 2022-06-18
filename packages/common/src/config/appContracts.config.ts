@@ -26,14 +26,12 @@ export const appContractsConfig = () => {
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your hadrdhat contracts here
       // --------------------------------------------------
-      YourContract: createConnectorForHardhatContract(
-        'YourContract',
-        hardhatContracts.YourContract__factory,
+      LyicxCoin: createConnectorForHardhatContract(
+        'LyicxCoin',
+        hardhatContracts.LyicxCoin__factory,
         hardhatContractsJson
       ),
-
-      YourNFT: createConnectorForHardhatContract('YourNFT', hardhatContracts.YourNFT__factory, hardhatContractsJson),
-
+      Sink: createConnectorForHardhatContract('Sink', hardhatContracts.Sink__factory, hardhatContractsJson),
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your external contracts here, make sure to define the address in `externalContractsConfig.ts`Í
       // --------------------------------------------------
