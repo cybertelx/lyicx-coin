@@ -315,6 +315,11 @@ export const MainPage: FC = () => {
                       Also a link to Lyicx&apos;s YouTube channel.
                     </Typography.Link>
                   </li>
+                  <li>
+                    <Typography.Link href="https://discord.gg/K2hD2Ggwpt">
+                      Join our Lyicx Coin discord server!
+                    </Typography.Link>
+                  </li>
                 </ul>
                 - Made with ❤️ by Operator (the dope)
               </Card>
